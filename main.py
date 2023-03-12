@@ -3,7 +3,7 @@ import config
 import telebot
 from telebot import types
 import requests
-
+from bs4 import BeautifulSoup as BS
 
 bot = telebot.TeleBot(config.Token)
 
@@ -45,11 +45,25 @@ def bot_message(message):
 
             bot.send_message(message.chat.id, 'Выбери город:', reply_markup=markup)
 
+        #   Кнопка "Погода в Чолпан-Ате"
         elif message.text == '🇰🇬 Погода в Чолпан-Ате':
-            bot.send_message(message.chat.id, 'Я пока не умею такого!😢')
+            r = requests.get('https://sinoptik.ua/погода-чолпон-ата')
+            html = BS(r.content, 'html.parser')
+            for el in html.select('#content'):
+                t_min = el.select('.temperature .min')[0].text
+                t_max = el.select('.temperature .max')[0].text
+                text = el.select('.wDescription .description')[0].text
+                bot.send_message(message.chat.id, "Погода на сегодня:\n" + t_min + ', ' + t_max + '.' + text)
 
+        #   Кнопка "Погода в Перми"
         elif message.text == '🇷🇺 Погода в Перми':
-            bot.send_message(message.chat.id, 'Неее я пока только учусь и незнаю, как это передавать!🧐')
+            r = requests.get('https://sinoptik.ua/погода-пермь')
+            html = BS(r.content, 'html.parser')
+            for el in html.select('#content'):
+                t_min = el.select('.temperature .min')[0].text
+                t_max = el.select('.temperature .max')[0].text
+                text = el.select('.wDescription .description')[0].text
+                bot.send_message(message.chat.id, "Погода на сегодня:\n" + t_min + ', ' + t_max + '.' + text)
 
         #   Кнопка "Что делает Артур?"
         elif message.text == '❌ Что делает Артур?':
@@ -69,6 +83,22 @@ def bot_message(message):
             back = types.KeyboardButton('🔙 Назад')
             markup.add(course_dollar, course_euro, back)
             bot.send_message(message.chat.id, '💲 Курсы валют', reply_markup=markup)
+
+        #   Кнопка "Курс Доллара"
+        elif message.text == '💵 Курс Доллара':
+            url = 'https://www.currency.me.uk/convert/usd/rub'
+            r = requests.get(url)
+            soup = BS(r.text, 'lxml')
+            curs = soup.find("span", {"class": "mini ccyrate"}).text
+            bot.send_message(message.chat.id, curs)
+
+        #   Кнопка "Курс Евро"
+        elif message.text == '💶 Курс Евро':
+            url = 'https://www.currency.me.uk/convert/eur/rub'
+            r = requests.get(url)
+            soup = BS(r.text, 'lxml')
+            curs = soup.find("span", {"class": "mini ccyrate"}).text
+            bot.send_message(message.chat.id, curs)
 
         #   Кнопка "Информация"
         elif message.text == '❗️ Информация':

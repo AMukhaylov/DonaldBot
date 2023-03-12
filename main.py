@@ -1,9 +1,11 @@
 import random
+import config
 import telebot
 from telebot import types
 import requests
 
-bot = telebot.TeleBot('6052300940:AAHn52m9GZSqg7qRm-FkYpIStJkWGv9VYlA')
+
+bot = telebot.TeleBot(config.Token)
 
 
 #   Приветсвенное сообщение и главное меню
@@ -40,6 +42,7 @@ def bot_message(message):
             weather_perm = types.KeyboardButton('🇷🇺 Погода в Перми')
             back = types.KeyboardButton('🔙 Назад')
             markup.add(weather_kgs, weather_perm, back)
+
             bot.send_message(message.chat.id, 'Выбери город:', reply_markup=markup)
 
         elif message.text == '🇰🇬 Погода в Чолпан-Ате':

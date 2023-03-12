@@ -77,12 +77,13 @@ def bot_message(message):
 
         #   Кнопка "Курсы валют"
         elif message.text == '💲 Курсы валют':
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
             course_dollar = types.KeyboardButton('💵 Курс Доллара')
-            course_euro = types.KeyboardButton('💶 Курс Евро')
+            course_som = types.KeyboardButton('💶 Курс Евро')
+            course_euro = types.KeyboardButton('🇰🇬 Курс Сом')
             back = types.KeyboardButton('🔙 Назад')
-            markup.add(course_dollar, course_euro, back)
-            bot.send_message(message.chat.id, '💲 Курсы валют', reply_markup=markup)
+            markup.add(course_dollar, course_som, course_euro, back)
+            bot.send_message(message.chat.id, 'Выбери вылюту:', reply_markup=markup)
 
         #   Кнопка "Курс Доллара"
         elif message.text == '💵 Курс Доллара':
@@ -98,6 +99,14 @@ def bot_message(message):
             r = requests.get(url)
             soup = BS(r.text, 'lxml')
             curs = soup.find("span", {"class": "mini ccyrate"}).text
+            bot.send_message(message.chat.id, curs)
+
+        #   Кнопка "Курс Сом"
+        elif message.text == '🇰🇬 Курс Сом':
+            url = 'https://pokur.su/rub/kgs/1/'
+            r = requests.get(url)
+            soup = BS(r.text, 'lxml')
+            curs = soup.find("div", {"class": "blockquote-classic"}).text
             bot.send_message(message.chat.id, curs)
 
         #   Кнопка "Информация"
